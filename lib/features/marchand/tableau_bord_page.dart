@@ -29,7 +29,6 @@ class _TableauBordPageState extends State<TableauBordPage> {
 
   String _marchandId = "";
   String _nomCommerce = "";
-  String? _dateFinEssai;
 
   double? _lat;
   double? _lng;
@@ -92,7 +91,6 @@ class _TableauBordPageState extends State<TableauBordPage> {
 
       _marchandId = marchand['id'];
       _nomCommerce = marchand['name'];
-      _dateFinEssai = marchand['trial_end'];
 
       _lat = marchand['lat'] != null
           ? (marchand['lat'] as num).toDouble()
@@ -166,22 +164,6 @@ class _TableauBordPageState extends State<TableauBordPage> {
         _enChargement = false;
       });
     }
-  }
-
-  // =========================================================
-  // JOURS RESTANTS DE L'ESSAI
-  // =========================================================
-
-  int _joursRestants() {
-    if (_dateFinEssai == null) {
-      return 0;
-    }
-
-    final fin = DateTime.parse(_dateFinEssai!);
-
-    final difference = fin.difference(DateTime.now()).inDays;
-
-    return difference < 0 ? 0 : difference;
   }
 
   // =========================================================
@@ -841,28 +823,6 @@ class _TableauBordPageState extends State<TableauBordPage> {
                       ),
                     ),
                   ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // =====================================================
-            // OFFRE D'ESSAI
-            // =====================================================
-
-            Card(
-              child: ListTile(
-                leading: const Icon(
-                  Icons.timer_outlined,
-                ),
-
-                title: const Text(
-                  "Offre d'essai",
-                ),
-
-                subtitle: Text(
-                  "Il reste ${_joursRestants()} jours",
                 ),
               ),
             ),
