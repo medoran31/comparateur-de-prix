@@ -13,6 +13,7 @@ class AccueilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE8F0F8),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32),
