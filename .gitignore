@@ -57,6 +57,9 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
+# Sauvegardes locales (donnees + mot de passe de signature)
+/sauvegardes/
+
 # Secrets et signature (NE JAMAIS versionner)
 key.properties
 *.jks

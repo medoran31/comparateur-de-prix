@@ -67,7 +67,9 @@ class _FicheMarchandPageState extends State<FicheMarchandPage> {
         'device_id': idAppareil,
       });
     } catch (e) {
-      // Une erreur ici ne doit pas gêner l'utilisateur.
+      // Une erreur ici ne doit pas gêner l'utilisateur, mais on la trace
+      // dans les logs pour pouvoir diagnostiquer les statistiques à zéro.
+      debugPrint('[AS3AR] Événement "$type" non enregistré : $e');
     }
   }
 
@@ -181,6 +183,7 @@ class _FicheMarchandPageState extends State<FicheMarchandPage> {
           );
         }
       } else {
+        debugPrint('[AS3AR] Signalement "$type" non enregistré : $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Une erreur est survenue.")),
