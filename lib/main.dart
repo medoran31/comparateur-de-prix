@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color(0xFF1F3A5F),
         ),
         // Fond general de l'application : bleu tres clair (au lieu du blanc).
-        scaffoldBackgroundColor: const Color(0xFFE8F0F8),
+        scaffoldBackgroundColor: const Color(0xFFEEF4FF),
         useMaterial3: true,
       ),
       home: const AccueilPage(),
