@@ -33,6 +33,16 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Builds Android (temporaires)
+android/build/
+android/.gradle/
+android/.cxx/
+android/local.properties
+
+# Supabase CLI (temporaire, propre a la machine)
+supabase/.temp/
+supabase/.branches/
+
 # Symbolication related
 app.*.symbols
 
