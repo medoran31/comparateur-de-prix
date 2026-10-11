@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'fiche_marchand_page.dart';
+import '../../core/fraicheur.dart';
+import '../../core/partage.dart';
 
 class ResultatsPage extends StatefulWidget {
   final int produitId;
@@ -125,12 +127,16 @@ class _ResultatsPageState extends State<ResultatsPage> {
     });
   }
 
-  String _texteDelai(String dateTexte) {
-    final date = DateTime.parse(dateTexte);
-    final difference = DateTime.now().difference(date);
-    if (difference.inHours < 1) return "il y a moins d une heure";
-    if (difference.inHours < 24) return "il y a " + difference.inHours.toString() + " h";
-    return "il y a " + difference.inDays.toString() + " j";
+  Future<void> _partagerResultats() async {
+    final lignes = _resultats.map((l) {
+      final marchand = l['merchants'];
+      return "- ${marchand['name']} (${marchand['quarter']}) : ${l['amount_da']} DA";
+    }).join('\n');
+    final resume = "${widget.produitNom} :\n$lignes";
+    await partagerTexte(
+      messagePartagePanier(resume),
+      sujet: widget.produitNom,
+    );
   }
 
   String _texteDistance(double metres) {
@@ -158,7 +164,16 @@ class _ResultatsPageState extends State<ResultatsPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.produitNom)),
+      appBar: AppBar(
+        title: Text(widget.produitNom),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Partager',
+            onPressed: _resultats.isEmpty ? null : _partagerResultats,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -201,7 +216,6 @@ class _ResultatsPageState extends State<ResultatsPage> {
                 if (distance != null) {
                   sousTitre = sousTitre + " • " + _texteDistance(distance);
                 }
-                sousTitre = sousTitre + " • " + _texteDelai(ligne['created_at']);
 
                 return Card(
                   child: InkWell(
@@ -244,6 +258,8 @@ class _ResultatsPageState extends State<ResultatsPage> {
                                   style: const TextStyle(
                                       fontSize: 13, color: Colors.grey),
                                 ),
+                                const SizedBox(height: 2),
+                                LigneFraicheurPrix(ligne['created_at']),
                               ],
                             ),
                           ),
@@ -254,8 +270,12 @@ class _ResultatsPageState extends State<ResultatsPage> {
                             children: [
                               Text(
                                 ligne['amount_da'].toString() + " DA",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: prixAncien(ligne['created_at'])
+                                        ? Colors.grey
+                                        : null),
                               ),
                               if (estLeMoinsCher)
                                 const Padding(

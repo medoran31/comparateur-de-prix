@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../recherche/fiche_marchand_page.dart';
+import '../../core/partage.dart';
 
 class ResultatsListePage extends StatefulWidget {
   final List<Map<String, dynamic>> produits;
@@ -92,12 +93,36 @@ class _ResultatsListePageState extends State<ResultatsListePage> {
     }
   }
 
+  Future<void> _partager() async {
+    final lignes = _resultatsParMarchand.map((e) {
+      final marchand = e['marchand'];
+      final detail = e['detail'] as Map<int, num>;
+      final total = e['total'] as double;
+      return "- ${marchand['name']} (${marchand['quarter']}) : "
+          "${total.toStringAsFixed(0)} DA "
+          "(${detail.length}/${widget.produits.length} produits)";
+    }).join('\n');
+    await partagerTexte(
+      messagePartagePanier("Comparaison de mon panier :\n$lignes"),
+      sujet: 'Comparaison de panier',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final totalProduits = widget.produits.length;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Comparaison du panier')),
+      appBar: AppBar(
+        title: const Text('Comparaison du panier'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Partager',
+            onPressed: _resultatsParMarchand.isEmpty ? null : _partager,
+          ),
+        ],
+      ),
       body: _enChargement
           ? const Center(child: CircularProgressIndicator())
           : _erreur != null

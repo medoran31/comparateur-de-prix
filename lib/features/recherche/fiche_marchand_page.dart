@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/device_id.dart';
 import '../../core/favoris.dart';
+import '../../core/fraicheur.dart';
+import '../../core/partage.dart';
 
 class FicheMarchandPage extends StatefulWidget {
   final String marchandId;
@@ -193,12 +196,46 @@ class _FicheMarchandPageState extends State<FicheMarchandPage> {
     }
   }
 
-  String _texteDelai(String dateTexte) {
-    final date = DateTime.parse(dateTexte);
-    final difference = DateTime.now().difference(date);
-    if (difference.inHours < 1) return "il y a moins d'une heure";
-    if (difference.inHours < 24) return "il y a ${difference.inHours} h";
-    return "il y a ${difference.inDays} j";
+  Future<void> _partager() async {
+    await partagerTexte(
+      messagePartageMarchand(widget.marchandNom, widget.quartier),
+      sujet: widget.marchandNom,
+    );
+  }
+
+  void _afficherQr() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("QR code du commerce"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(12),
+              child: QrImageView(
+                data: contenuQrMarchand(widget.marchandNom, widget.quartier),
+                version: QrVersions.auto,
+                size: 220,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Faites scanner ce code pour decouvrir les prix de ce commerce sur AS3AR.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Fermer"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -207,6 +244,16 @@ class _FicheMarchandPageState extends State<FicheMarchandPage> {
       appBar: AppBar(
         title: Text(widget.marchandNom),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Partager',
+            onPressed: _partager,
+          ),
+          IconButton(
+            icon: const Icon(Icons.qr_code_2),
+            tooltip: 'QR code',
+            onPressed: _afficherQr,
+          ),
           IconButton(
             icon: Icon(
               _estFavori ? Icons.favorite : Icons.favorite_border,
@@ -270,11 +317,7 @@ class _FicheMarchandPageState extends State<FicheMarchandPage> {
                             ),
                           ],
                         ),
-                        Text(
-                          "Mis à jour ${_texteDelai(ligne['created_at'])}",
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.grey),
-                        ),
+                        LigneFraicheurPrix(ligne['created_at']),
                         const SizedBox(height: 8),
                         if (dejaFait)
                           const Text("Merci pour votre retour.",

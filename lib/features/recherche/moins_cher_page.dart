@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'fiche_marchand_page.dart';
 import '../../core/cache_hors_ligne.dart';
+import '../../core/fraicheur.dart';
+import '../../core/partage.dart';
 
 const String _cleMoinsCher = 'prix_moins_chers';
 
@@ -91,13 +93,16 @@ class _MoinsCherPageState extends State<MoinsCherPage> {
     }
   }
 
-  String _texteDelai(String dateTexte) {
-    final date = DateTime.parse(dateTexte);
-    final difference = DateTime.now().difference(date);
-    if (difference.inHours < 1) return "il y a moins d'une heure";
-    if (difference.inHours < 24) return "il y a ${difference.inHours} h";
-    if (difference.inDays < 7) return "il y a ${difference.inDays} j";
-    return "il y a plus d'une semaine";
+  Future<void> _partager() async {
+    final lignes = _resultats.take(15).map((l) {
+      final produit = l['products'];
+      final marchand = l['merchants'];
+      return "- ${produit['name_fr']} : ${l['amount_da']} DA chez ${marchand['name']}";
+    }).join('\n');
+    await partagerTexte(
+      messagePartagePanier("Prix les moins chers :\n$lignes"),
+      sujet: 'Prix les moins chers',
+    );
   }
 
   @override
@@ -106,6 +111,11 @@ class _MoinsCherPageState extends State<MoinsCherPage> {
       appBar: AppBar(
         title: const Text("Prix les moins chers"),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: _resultats.isEmpty ? null : _partager,
+            tooltip: "Partager",
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _charger,
@@ -227,18 +237,7 @@ class _MoinsCherPageState extends State<MoinsCherPage> {
                             ],
                           ),
                           const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              const Icon(Icons.access_time,
-                                  size: 14, color: Colors.grey),
-                              const SizedBox(width: 4),
-                              Text(
-                                _texteDelai(ligne['created_at']),
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 12),
-                              ),
-                            ],
-                          ),
+                          LigneFraicheurPrix(ligne['created_at']),
                         ],
                       ),
                       onTap: () {
