@@ -23,7 +23,7 @@ class AccueilPage extends StatelessWidget {
               const Icon(
                 Icons.storefront,
                 size: 80,
-                color: Color(0xFF1F3A5F),
+                color: Color(0xFFFF6D00),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -32,7 +32,7 @@ class AccueilPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1F3A5F),
+                  color: Color(0xFFFF6D00),
                 ),
               ),
               const SizedBox(height: 4),
