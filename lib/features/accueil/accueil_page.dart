@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../recherche/recherche_page.dart';
 import '../recherche/moins_cher_page.dart';
 import '../recherche/magasins_page.dart';
+import '../recherche/favoris_page.dart';
 import '../liste_courses/liste_courses_page.dart';
 import '../marchand/connexion_marchand_page.dart';
 
@@ -112,6 +113,23 @@ class AccueilPage extends StatelessWidget {
                 },
                 icon: const Icon(Icons.shopping_cart_outlined),
                 label: const Text('Liste de courses'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.all(18),
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FavorisPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.favorite_border),
+                label: const Text('Mes favoris'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.all(18),
                   textStyle: const TextStyle(fontSize: 16),

@@ -1,30 +1,27 @@
-// This is a basic Flutter widget test.
+// Test de fumee : verifie que l'ecran d'accueil s'affiche correctement.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Ce test ne contacte pas le reseau : la page d'accueil est purement
+// visuelle (l'initialisation de Supabase se fait dans main(), pas dans
+// le widget MyApp).
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:comparateur_prix/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets("L'accueil affiche le titre et les boutons principaux",
+      (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Le titre de l'application.
+    expect(find.text('AS3AR'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Les boutons principaux sont presents.
+    expect(find.text('Rechercher un produit'), findsOneWidget);
+    expect(find.text('Prix les moins chers'), findsOneWidget);
+    expect(find.text('Magasins'), findsOneWidget);
+    expect(find.text('Liste de courses'), findsOneWidget);
+    expect(find.text('Mes favoris'), findsOneWidget);
+    expect(find.text('Espace marchand'), findsOneWidget);
   });
 }
